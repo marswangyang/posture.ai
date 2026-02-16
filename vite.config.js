@@ -4,31 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.VITE_BASE ?? '/',
+  base: '/posture.ai/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
     minify: 'esbuild'
-  },
-  server: {
-    proxy: {
-      // 本機開發時轉發到 Google Script，避免 CORS；.env 需設定 VITE_GOOGLE_SCRIPT_URL
-      '/api/proxy': (() => {
-        const url = process.env.VITE_GOOGLE_SCRIPT_URL
-        if (!url) return { target: 'https://script.google.com', changeOrigin: true }
-        try {
-          const u = new URL(url)
-          return {
-            target: u.origin,
-            changeOrigin: true,
-            secure: true,
-            rewrite: () => u.pathname + u.search
-          }
-        } catch (_) {
-          return { target: 'https://script.google.com', changeOrigin: true }
-        }
-      })()
-    }
   }
 })

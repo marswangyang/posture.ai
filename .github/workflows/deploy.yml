@@ -34,10 +34,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # 專案頁網址為 https://<user>.github.io/<repo>/，base 必須為 /<repo>/
-          VITE_BASE: /${{ github.event.repository.name }}/
-          # 表單/流量需經代理避開 CORS；請在 Secrets 新增 VITE_API_BASE = 你的代理完整網址（例：Vercel 部署的 /api/proxy 網址）
-          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          # 在 GitHub Repo → Settings → Secrets 新增 VITE_GOOGLE_SCRIPT_URL
+          VITE_GOOGLE_SCRIPT_URL: ${{ secrets.VITE_GOOGLE_SCRIPT_URL }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

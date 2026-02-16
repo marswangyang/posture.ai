@@ -15,9 +15,7 @@ import {
 } from 'lucide-react';
 
 // --- 設定區 ---
-// Vercel：用同源 /api/proxy（需在 Vercel 設 GOOGLE_SCRIPT_URL）
-// GitHub Pages：無後端，需設 VITE_API_BASE 為「代理完整網址」（例：同專案 API 部署到 Vercel 的 URL）
-const API_BASE = import.meta.env.VITE_API_BASE || '/api/proxy'; 
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || ''; 
 
 // --- 多語言字典 ---
 const translations = {
@@ -369,7 +367,7 @@ const App = () => {
 
   // 2. 當 IP 資料準備好 (或失敗) 且 Script URL 存在時，發送流量追蹤
   useEffect(() => {
-    if (API_BASE && ipData && !hasTracked.current) {
+    if (GOOGLE_SCRIPT_URL && ipData && !hasTracked.current) {
       hasTracked.current = true;
       
       const trackVisit = async () => {
@@ -384,9 +382,8 @@ const App = () => {
             screenWidth: window.screen.width
           };
 
-          await fetch(API_BASE, {
+          await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
           // 流量追蹤默默在背景執行，不需要顯示成功/失敗給用戶
@@ -457,7 +454,7 @@ const App = () => {
     setStatus('submitting');
     setServerError('');
 
-    if (!API_BASE) {
+    if (!GOOGLE_SCRIPT_URL) {
       setServerError(t('error_script_url'));
       setStatus('error');
       return;
@@ -472,20 +469,13 @@ const App = () => {
         userCountry: userCountry 
       };
 
-      const response = await fetch(API_BASE, {
+      const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      const text = await response.text();
-      if (!response.ok) throw new Error(text || 'Request failed');
-      let result;
-      try {
-        result = text ? JSON.parse(text) : {};
-      } catch (_) {
-        throw new Error(text || 'Invalid response');
-      }
+      const result = await response.json();
+
       if (result.status === 'success') {
         setStatus('success');
       } else if (result.status === 'error' && result.code === 'DUPLICATE_EMAIL') {
@@ -498,7 +488,9 @@ const App = () => {
     } catch (error) {
       console.error('Submission Error:', error);
       setStatus('error');
-      setServerError(error.message || t('error_general'));
+      if (!serverError) {
+        setServerError(t('error_general'));
+      }
     }
   };
 
