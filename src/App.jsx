@@ -87,7 +87,6 @@ const translations = {
     paid_opt_1: '有，看過物理治療/整骨',
     paid_opt_2: '有，買過按摩槍/放鬆工具或線上課程',
     paid_opt_3: '只有在 YouTube 上盲目找免費影片跟著做',
-    paid_opt_4: '沒有，我選擇忽視它',
     // Learning Module (kept for existing section)
     module_preview_title: '學習模組預覽',
     module_preview_subtitle: '週期建議 · 個人化動作指引',
@@ -179,7 +178,6 @@ const translations = {
     paid_opt_1: '有，看过物理治疗/整骨',
     paid_opt_2: '有，买过按摩枪/放松工具或在线课程',
     paid_opt_3: '只有在 YouTube 上盲目找免费影片跟着做',
-    paid_opt_4: '没有，我选择忽视它',
     module_preview_title: '学习模块预览',
     module_preview_subtitle: '周期建议 · 个性化动作指引',
     module_mobile: '行动模块',
@@ -270,7 +268,6 @@ const translations = {
     paid_opt_1: 'Yes, PT / Chiropractor',
     paid_opt_2: 'Yes, Massage guns / Mobility programs',
     paid_opt_3: 'Only watching free YouTube videos',
-    paid_opt_4: 'No, I just ignore it',
     module_preview_title: 'Learning Module Preview',
     module_preview_subtitle: 'Weekly suggestions · Personalized movement cues',
     module_mobile: 'Mobile Module',
@@ -515,7 +512,6 @@ const App = () => {
     { val: 'pt_chiro', labelKey: 'paid_opt_1' },
     { val: 'massage_programs', labelKey: 'paid_opt_2' },
     { val: 'youtube_only', labelKey: 'paid_opt_3' },
-    { val: 'ignore', labelKey: 'paid_opt_4' },
   ];
 
   return (
