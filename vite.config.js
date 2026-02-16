@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // Vercel / 自訂網域用根路徑；GitHub Pages 專案頁請改為 '/repo-name/'
-  base: '/',
+  base: '/posture.ai/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
