@@ -15,7 +15,9 @@ import {
 } from 'lucide-react';
 
 // --- 設定區 ---
-const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || ''; 
+// Vercel：用同源 /api/proxy（需在 Vercel 設 GOOGLE_SCRIPT_URL）
+// GitHub Pages：無後端，需設 VITE_API_BASE 為「代理完整網址」（例：同專案 API 部署到 Vercel 的 URL）
+const API_BASE = import.meta.env.VITE_API_BASE || '/api/proxy'; 
 
 // --- 多語言字典 ---
 const translations = {
@@ -367,7 +369,7 @@ const App = () => {
 
   // 2. 當 IP 資料準備好 (或失敗) 且 Script URL 存在時，發送流量追蹤
   useEffect(() => {
-    if (GOOGLE_SCRIPT_URL && ipData && !hasTracked.current) {
+    if (API_BASE && ipData && !hasTracked.current) {
       hasTracked.current = true;
       
       const trackVisit = async () => {
@@ -382,7 +384,7 @@ const App = () => {
             screenWidth: window.screen.width
           };
 
-          await fetch(GOOGLE_SCRIPT_URL, {
+          await fetch(API_BASE, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -455,7 +457,7 @@ const App = () => {
     setStatus('submitting');
     setServerError('');
 
-    if (!GOOGLE_SCRIPT_URL) {
+    if (!API_BASE) {
       setServerError(t('error_script_url'));
       setStatus('error');
       return;
@@ -470,7 +472,7 @@ const App = () => {
         userCountry: userCountry 
       };
 
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
