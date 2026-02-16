@@ -2,8 +2,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
-// GitHub Pages 專案頁：build 時設 VITE_BASE=/repo-name/（例：/landing-page/）
-// Vercel / 根網域：不設或 VITE_BASE=/
 export default defineConfig({
   plugins: [react()],
   base: process.env.VITE_BASE ?? '/',
