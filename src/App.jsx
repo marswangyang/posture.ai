@@ -2,13 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Scan, 
   Activity, 
-  ShieldCheck, 
-  Users, 
   TrendingUp, 
   Check, 
   Lock, 
   ArrowRight,
-  Smartphone,
   Globe,
   Sun,
   Moon,
@@ -20,68 +17,78 @@ import {
 // --- 設定區 ---
 const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL || ''; 
 
-// --- 多語言字典 (保持不變) ---
+// --- 多語言字典 ---
 const translations = {
   'zh-TW': {
     brand: 'POSTURE.AI',
-    nav_btn: '申請加入 Beta',
-    hero_title_1: '站姿，',
-    hero_title_2: '就是你的',
-    hero_title_highlight: '名片',
-    hero_subtitle: '專為都會男性設計的體態結構優化系統。\n數據驅動，極簡高效，重塑你的專業氣場。',
-    hero_cta: '立即申請 Beta',
-    hero_limit: '僅開放 50 名額',
-    chart_title: '結構趨勢分析',
-    chart_subtitle: 'AI Structural Analysis',
-    chart_metric_1: '肩腰比例優化',
-    chart_metric_2: '上半身張力',
-    chart_metric_3: '站姿穩定度',
-    feat_1_title: '結構升級',
-    feat_1_desc: '專注上半身結構優化，透過微調提升穿衣支撐度與專業形象。',
-    feat_2_title: '改善導向',
-    feat_2_desc: '不排名、不比較。系統只關注「你的進步」與自我數據的縱向對比。',
-    feat_3_title: '精準追蹤',
-    feat_3_desc: 'AI 分析姿態趨勢 → 週期改善方案 → 月度回饋報告。',
-    feat_4_title: '隱私圈子',
-    feat_4_desc: '封閉邀請制，數據端對端加密。打造安全、無干擾的精英男性社群。',
-    step_title: '可視化結構優化流程',
-    step_subtitle: '極簡四步驟，融入日常，無痛優化',
-    step_1: '體態快照',
-    step_1_desc: 'AI 快速掃描，捕捉體態結構',
-    step_2: '趨勢觀察',
-    step_2_desc: 'AI 分析趨勢，識別改善機會',
-    step_3: '週期建議',
-    step_4: '月度報告',
-    form_title: '申請加入 Beta',
-    form_subtitle: 'Elite Access Only',
-    form_desc: '我們採限額邀請制，請填寫真實資訊以利審核。',
+    nav_btn: '分析我的結構風險',
+    hero_badge: '僅限 Beta 體驗',
+    hero_headline: '別讓你的辦公桌毀了你的訓練。',
+    hero_subtitle: '每天十小時的編程與久坐，正在悄悄摧毀你的關節活動度與力量傳導。不要等到為了推上重量而極度拱腰，導致髖關節壓迫、臀部抽痛時才後悔。用 AI 量化你的隱形代償，修復底盤，找回無痛的深蹲與臥推 PR。',
+    hero_cta: '分析我的結構風險',
+    hero_limit: '僅限 50 位早期體驗工程師。',
+    chart_title: '結構代償趨勢圖',
+    chart_subtitle: 'AI 結構分析',
+    chart_metric_1: '肩線水平差',
+    chart_metric_2: '軀幹對稱度',
+    chart_metric_3: '頭前傾幅度',
+    problem_title: '你正在崩壞的基礎上訓練。',
+    problem_1_title: '辦公桌懲罰',
+    problem_1_desc: '緊繃的胸椎和失能的髖部，讓你無法在深蹲時保持中立。',
+    problem_2_title: '危險代償',
+    problem_2_desc: '為了突破重量盲目代償，最終換來的是下背痛和隨時會爆掉的關節。',
+    problem_3_title: '盲目猜測',
+    problem_3_desc: '盲目看 YouTube 找復健影片，卻根本不知道自己身體真正的結構歪斜趨勢在哪裡。',
+    how_title: '專為高績效者打造的 AI 防禦性校準。',
+    how_subtitle: '每週 3 分鐘手機鏡頭 · 結構代償趨勢 · 微量修復任務',
+    step_1: '捕捉',
+    step_1_desc: '每週 3 分鐘，只需手機鏡頭。AI 視覺精準捕捉你的肩線水平差、軀幹對稱度與頭前傾幅度。',
+    step_2: '分析',
+    step_2_desc: '不給無效的健康分數。我們給你清晰的「結構代償趨勢圖」，讓數據說話。',
+    step_3: '校準',
+    step_3_bullet_1: '精準的訓練前校準：5 分鐘動態防禦性熱身，針對每週結構弱點。釋放特定緊繃、喚醒神經系統，安全挑戰極限。',
+    step_3_bullet_2: '每日微量活動度修復：根據即時結構偏移，每日 3-5 分鐘修復任務。在辦公桌代償毀了下一次訓練前，每天逆轉它。',
+    form_title: '申請早期體驗',
+    form_subtitle: '早期體驗',
+    form_desc: '填寫以下資訊，我們將審核並通知符合資格的工程師。',
     label_name: '姓名',
-    label_email: 'Email',
-    label_age: '年齡區間',
-    label_occ: '職業類別',
-    label_fitness: '健身習慣',
-    label_freq: '每週次數',
-    label_exp: '經驗年限',
-    label_pain: '主要痛點 (可多選)',
-    label_goals: '改善目標 (可多選)',
-    label_time: '每日投入時間',
-    label_price: '付費意願 (月訂閱)',
-    label_track: '偏好追蹤方式 (可複選)',
-    label_extra: '額外建議或期望功能 (選填)',
+    label_email: '電子信箱',
+    label_desk_hours: '你每天坐在辦公桌/螢幕前多少小時？',
+    label_lifts_stuck: '你主要練哪些複合動作？目前卡在哪裡？',
+    label_lifts_placeholder: '例：深蹲 115kg，但我不敢再往上加了；臥推 165lb 卡了三個月',
+    label_pain: '目前是哪種具體的代償或疼痛在阻礙你的進步？',
+    label_paid_fix: '你之前是否花過錢或時間試圖解決這個問題？',
     btn_submit: '提交申請',
     btn_submitting: '處理中...',
-    footer_rights: 'All rights reserved.',
+    footer_rights: '版權所有。',
     footer_privacy: '隱私權政策',
     footer_terms: '服務條款',
     footer_login: '僅限會員登入',
+    footer_encrypted: '端對端加密',
     success_title: '申請已送出',
-    success_desc: '感謝您對 POSTURE.AI 的興趣。我們的團隊將審核您的資料。',
+    success_follow: '我們會盡快與您聯繫。',
+    success_desc: '感謝您對 POSTURE.AI 的興趣。我們將審核您的資料並與您聯繫。',
     error_duplicate: '此 Email 已經申請過了，請勿重複提交。',
     error_general: '發生錯誤，請稍後再試或聯繫客服。',
     error_script_url: '系統設定錯誤：尚未設定 Google Sheet 串接網址。',
     other_placeholder: '請說明...',
-    opt_unwilling: '暫不考慮付費',
-    // Learning Module
+    // Form options - desk hours
+    desk_opt_1: '< 4 小時',
+    desk_opt_2: '4-8 小時',
+    desk_opt_3: '8-12 小時',
+    desk_opt_4: '12+ 小時',
+    // Pain/compensation options
+    pain_opt_1: '下背痛 / 骨盆前傾導致核心不穩',
+    pain_opt_2: '臥推時過度拱腰導致髖關節/臀部壓迫',
+    pain_opt_3: '深蹲底部的屁股眨眼與緊繃',
+    pain_opt_4: '胸椎/肩膀活動度喪失',
+    pain_opt_other: '其他',
+    // Paid to fix options
+    paid_opt_1: '有，看過物理治療/整骨',
+    paid_opt_2: '有，買過按摩槍/放鬆工具或線上課程',
+    paid_opt_3: '只有在 YouTube 上盲目找免費影片跟著做',
+    paid_opt_4: '沒有，我選擇忽視它',
+    // Learning Module (kept for existing section)
     module_preview_title: '學習模組預覽',
     module_preview_subtitle: '週期建議 · 個人化動作指引',
     module_mobile: '行動模組',
@@ -109,64 +116,70 @@ const translations = {
   },
   'zh-CN': {
     brand: 'POSTURE.AI',
-    nav_btn: '申请加入 Beta',
-    hero_title_1: '站姿，',
-    hero_title_2: '就是你的',
-    hero_title_highlight: '名片',
-    hero_subtitle: '专为都会男性设计的体态结构优化系统。\n数据驱动，极简高效，重塑你的专业气场。',
-    hero_cta: '立即申请 Beta',
-    hero_limit: '仅开放 50 名额',
-    chart_title: '结构趋势分析',
-    chart_subtitle: 'AI Structural Analysis',
-    chart_metric_1: '肩腰比例优化',
-    chart_metric_2: '上半身张力',
-    chart_metric_3: '站姿稳定度',
-    feat_1_title: '结构升级',
-    feat_1_desc: '专注上半身结构优化，通过微调提升穿衣支撑度与专业形象。',
-    feat_2_title: '改善导向',
-    feat_2_desc: '不排名、不比较。系统只关注"你的进步"与自我数据的纵向对比。',
-    feat_3_title: '精准追踪',
-    feat_3_desc: 'AI 分析姿态趋势 → 周期改善方案 → 月度反馈报告。',
-    feat_4_title: '隐私圈子',
-    feat_4_desc: '封闭邀请制，数据端对端加密。打造安全、无干扰的精英男性社群。',
-    step_title: '可视化结构优化流程',
-    step_subtitle: '极简四步骤，融入日常，无痛优化',
-    step_1: '体态快照',
-    step_1_desc: 'AI 快速扫描，捕捉体态结构',
-    step_2: '趋势观察',
-    step_2_desc: 'AI 分析趋势，识别改善机会',
-    step_3: '周期建议',
-    step_4: '月度报告',
-    form_title: '申请加入 Beta',
-    form_subtitle: 'Elite Access Only',
-    form_desc: '我们采限额邀请制，请填写真实信息以利审核。',
+    nav_btn: '分析我的结构风险',
+    hero_badge: '仅限 Beta 体验',
+    hero_headline: '别让你的办公桌毁了你的训练。',
+    hero_subtitle: '每天十小时的编程与久坐，正在悄悄摧毁你的关节活动度与力量传导。不要等到为了推上重量而极度拱腰，导致髋关节压迫、臀部抽痛时才后悔。用 AI 量化你的隐形代偿，修复底盘，找回无痛的深蹲与卧推 PR。',
+    hero_cta: '分析我的结构风险',
+    hero_limit: '仅限 50 位早期体验工程师。',
+    chart_title: '结构代偿趋势图',
+    chart_subtitle: 'AI 结构分析',
+    chart_metric_1: '肩线水平差',
+    chart_metric_2: '躯干对称度',
+    chart_metric_3: '头前倾幅度',
+    problem_title: '你正在崩坏的基础上训练。',
+    problem_1_title: '办公桌惩罚',
+    problem_1_desc: '紧绷的胸椎和失能的髋部，让你无法在深蹲时保持中立。',
+    problem_2_title: '危险代偿',
+    problem_2_desc: '为了突破重量盲目代偿，最终换来的是下背痛和随时会爆掉的关节。',
+    problem_3_title: '盲目猜测',
+    problem_3_desc: '盲目看 YouTube 找复健影片，却根本不知道自己身体真正的结构歪斜趋势在哪里。',
+    how_title: '专为高绩效者打造的 AI 防御性校准。',
+    how_subtitle: '每周 3 分钟手机镜头 · 结构代偿趋势 · 微量修复任务',
+    step_1: '捕捉',
+    step_1_desc: '每周 3 分钟，只需手机镜头。AI 视觉精准捕捉你的肩线水平差、躯干对称度与头前倾幅度。',
+    step_2: '分析',
+    step_2_desc: '不给无效的健康分数。我们给你清晰的「结构代偿趋势图」，让数据说话。',
+    step_3: '校准',
+    step_3_bullet_1: '精准的训练前校准：5 分钟动态防御性热身，针对每周结构弱点。释放特定紧绷、唤醒神经系统，安全挑战极限。',
+    step_3_bullet_2: '每日微量活动度修复：根据即时结构偏移，每日 3-5 分钟修复任务。在办公桌代偿毁了下一次训练前，每天逆转它。',
+    form_title: '申请早期体验',
+    form_subtitle: '早期体验',
+    form_desc: '填写以下信息，我们将审核并通知符合资格的工程师。',
     label_name: '姓名',
-    label_email: 'Email',
-    label_age: '年龄区间',
-    label_occ: '职业类别',
-    label_fitness: '健身习惯',
-    label_freq: '每周次数',
-    label_exp: '经验年限',
-    label_pain: '主要痛点 (可多选)',
-    label_goals: '改善目标 (可多选)',
-    label_time: '每日投入时间',
-    label_price: '付费意愿 (月订阅)',
-    label_track: '偏好追踪方式 (可复选)',
-    label_extra: '额外建议或期望功能 (选填)',
+    label_email: '电子信箱',
+    label_desk_hours: '你每天坐在办公桌/屏幕前多少小时？',
+    label_lifts_stuck: '你主要练哪些复合动作？目前卡在哪里？',
+    label_lifts_placeholder: '例：深蹲 115kg，但我不敢再往上加了；卧推 165lb 卡了三个月',
+    label_pain: '目前是哪种具体的代偿或疼痛在阻碍你的进步？',
+    label_paid_fix: '你之前是否花过钱或时间试图解决这个问题？',
     btn_submit: '提交申请',
     btn_submitting: '处理中...',
-    footer_rights: 'All rights reserved.',
+    footer_rights: '版权所有。',
     footer_privacy: '隐私权政策',
     footer_terms: '服务条款',
     footer_login: '仅限会员登录',
+    footer_encrypted: '端对端加密',
     success_title: '申请已送出',
-    success_desc: '感谢您对 POSTURE.AI 的兴趣。我们的团队将审核您的资料。',
+    success_follow: '我们会尽快与您联系。',
+    success_desc: '感谢您对 POSTURE.AI 的兴趣。我们将审核您的资料并与您联系。',
     error_duplicate: '此 Email 已经申请过了，请勿重复提交。',
     error_general: '发生错误，请稍后再试或联系客服。',
     error_script_url: '系统设定错误：尚未设定 Google Sheet 串接网址。',
     other_placeholder: '请说明...',
-    opt_unwilling: '暂不考虑付费',
-    // Learning Module
+    desk_opt_1: '< 4 小时',
+    desk_opt_2: '4-8 小时',
+    desk_opt_3: '8-12 小时',
+    desk_opt_4: '12+ 小时',
+    pain_opt_1: '下背痛 / 骨盆前倾导致核心不稳',
+    pain_opt_2: '卧推时过度拱腰导致髋关节/臀部压迫',
+    pain_opt_3: '深蹲底部的屁股眨眼与紧绷',
+    pain_opt_4: '胸椎/肩膀活动度丧失',
+    pain_opt_other: '其他',
+    paid_opt_1: '有，看过物理治疗/整骨',
+    paid_opt_2: '有，买过按摩枪/放松工具或在线课程',
+    paid_opt_3: '只有在 YouTube 上盲目找免费影片跟着做',
+    paid_opt_4: '没有，我选择忽视它',
     module_preview_title: '学习模块预览',
     module_preview_subtitle: '周期建议 · 个性化动作指引',
     module_mobile: '行动模块',
@@ -194,64 +207,70 @@ const translations = {
   },
   'en': {
     brand: 'POSTURE.AI',
-    nav_btn: 'Join Beta',
-    hero_title_1: 'Posture is',
-    hero_title_2: 'Your',
-    hero_title_highlight: 'Signature',
-    hero_subtitle: 'Structural optimization system designed for the urban elite.\nData-driven, minimalist, and efficient.',
-    hero_cta: 'Apply for Beta',
-    hero_limit: 'Limited to 50 spots',
-    chart_title: 'Structural Trend',
+    nav_btn: 'Scan My Structural Baseline',
+    hero_badge: 'Beta Access Only',
+    hero_headline: 'Stop Letting Your Desk Job Kill Your Lifts.',
+    hero_subtitle: 'Desk life is killing your mobility and force transfer.\nDon\'t wait for that arch to become hip pain.\nUse AI to see your compensations, fix your foundation, and lift pain-free.',
+    hero_cta: 'Scan My Structural Baseline',
+    hero_limit: 'Only taking 50 early access applicants.',
+    chart_title: 'Structural Compensation Trend',
     chart_subtitle: 'AI Structural Analysis',
-    chart_metric_1: 'Shoulder-Waist Ratio',
-    chart_metric_2: 'Upper Body Tension',
-    chart_metric_3: 'Stance Stability',
-    feat_1_title: 'Structural Upgrade',
-    feat_1_desc: 'Focus on upper body structure optimization to enhance professional presence.',
-    feat_2_title: 'Improvement Focus',
-    feat_2_desc: 'No rankings, no comparisons. Only focus on "your progress".',
-    feat_3_title: 'Precision Tracking',
-    feat_3_desc: 'AI posture analysis → Weekly plan → Monthly report.',
-    feat_4_title: 'Private Circle',
-    feat_4_desc: 'Invitation only. End-to-end encryption. A safe elite community.',
-    step_title: 'Visualized Process',
-    step_subtitle: 'Minimalist 4 steps, integrated into daily life',
-    step_1: 'Snapshot',
-    step_1_desc: 'AI scans and captures your posture structure',
-    step_2: 'Observation',
-    step_2_desc: 'AI analyzes trends and identifies improvement opportunities',
-    step_3: 'Suggestion',
-    step_4: 'Report',
-    form_title: 'Apply for Beta',
-    form_subtitle: 'Elite Access Only',
-    form_desc: 'Invitation only. Please fill in real info for review.',
+    chart_metric_1: 'Shoulder Level',
+    chart_metric_2: 'Torso Symmetry',
+    chart_metric_3: 'Forward Head',
+    problem_title: 'You Are Lifting on a Broken Foundation.',
+    problem_1_title: 'The Desk Penalty',
+    problem_1_desc: 'Tight thoracic spine and dysfunctional hips keep you from staying neutral in the squat.',
+    problem_2_title: 'Dangerous Compensations',
+    problem_2_desc: 'Blind compensation to push weight leads to lower back pain and joints ready to blow.',
+    problem_3_title: 'Blind Guessing',
+    problem_3_desc: 'You chase random YouTube rehab videos without knowing your body\'s actual structural bias.',
+    how_title: 'AI-Powered Pre-hab for High-Performers.',
+    how_subtitle: '3 min/week with your phone · Structural trend · Micro calibration tasks',
+    step_1: 'Capture',
+    step_1_desc: '3 minutes per week, phone camera only. AI vision captures shoulder level, torso symmetry, and forward head posture.',
+    step_2: 'Analyze',
+    step_2_desc: 'No useless wellness scores. You get a clear "structural compensation trend" so the data speaks.',
+    step_3: 'Calibrate',
+    step_3_bullet_1: 'Targeted Pre-Workout Calibration: 5-min dynamic pre-hab tailored to your weekly structural weak links. Release targeted tension, prime your nervous system, lift safely.',
+    step_3_bullet_2: 'Daily Micro-Dose Mobility: 3-5 min daily repair tasks based on your live structural bias. Reverse the desk penalty every day before it ruins your next lift.',
+    form_title: 'Apply for Early Access',
+    form_subtitle: 'Early Access',
+    form_desc: 'Fill in the form below. We\'ll review and notify qualifying applicants.',
     label_name: 'Name',
     label_email: 'Email',
-    label_age: 'Age Range',
-    label_occ: 'Occupation',
-    label_fitness: 'Fitness Habit',
-    label_freq: 'Weekly Freq',
-    label_exp: 'Years Exp',
-    label_pain: 'Main Pain Points',
-    label_goals: 'Improvement Goals',
-    label_time: 'Daily Commitment',
-    label_price: 'Willingness to Pay (Monthly)',
-    label_track: 'Tracking Preference (Multi-select)',
-    label_extra: 'Extra Suggestions (Optional)',
-    btn_submit: 'Submit Application',
+    label_desk_hours: 'How many hours a day do you spend sitting at a desk/screen?',
+    label_lifts_stuck: 'What are your primary compound lifts, and where are you currently stuck?',
+    label_lifts_placeholder: 'e.g. Squat 115kg but afraid to go heavier; Bench 165lb stuck for 3 months',
+    label_pain: 'What specific pain or compensation is currently killing your progress?',
+    label_paid_fix: 'Have you actively spent money or time trying to fix this issue?',
+    btn_submit: 'Submit',
     btn_submitting: 'Processing...',
     footer_rights: 'All rights reserved.',
     footer_privacy: 'Privacy Policy',
     footer_terms: 'Terms of Service',
     footer_login: 'Member Login',
+    footer_encrypted: 'End-to-end encrypted',
     success_title: 'Application Sent',
-    success_desc: 'Thank you for your interest. We will review your profile shortly.',
+    success_follow: 'We will get back to you soon!',
+    success_desc: 'Thank you for your interest. We will review your profile and get in touch.',
     error_duplicate: 'This email has already been registered.',
     error_general: 'An error occurred. Please try again later.',
     error_script_url: 'System Error: Google Sheet URL not configured.',
     other_placeholder: 'Please specify...',
-    opt_unwilling: 'Not willing to pay',
-    // Learning Module
+    desk_opt_1: '< 4 hours',
+    desk_opt_2: '4-8 hours',
+    desk_opt_3: '8-12 hours',
+    desk_opt_4: '12+ hours',
+    pain_opt_1: 'Lower back pain / Anterior pelvic tilt',
+    pain_opt_2: 'Hip/glute impingement from excessive arching during bench',
+    pain_opt_3: 'Butt wink & tightness at the bottom of the squat',
+    pain_opt_4: 'Loss of thoracic/shoulder mobility',
+    pain_opt_other: 'Other',
+    paid_opt_1: 'Yes, PT / Chiropractor',
+    paid_opt_2: 'Yes, Massage guns / Mobility programs',
+    paid_opt_3: 'Only watching free YouTube videos',
+    paid_opt_4: 'No, I just ignore it',
     module_preview_title: 'Learning Module Preview',
     module_preview_subtitle: 'Weekly suggestions · Personalized movement cues',
     module_mobile: 'Mobile Module',
@@ -325,18 +344,11 @@ const App = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    age: '',
-    occupation: '',
-    fitnessFreq: '',
-    fitnessExp: '',
-    painPoints: [],
-    painPointsOther: '',
-    goals: [],
-    goalsOther: '',
-    timeCommitment: '',
-    paymentWillingness: '',
-    trackingMethod: [], // Changed to array for multi-select
-    extra: ''
+    deskHours: '',
+    liftsStuck: '',
+    painCompensation: [],
+    painOther: '',
+    paidToFix: ''
   });
 
   // 1. 獲取使用者位置與 IP
@@ -453,11 +465,9 @@ const App = () => {
 
     try {
       const payload = {
-        action: 'submit', // 告訴後端這是表單提交
+        action: 'submit',
         ...formData,
-        painPoints: formData.painPoints.join(', '), 
-        goals: formData.goals.join(', '),
-        trackingMethod: formData.trackingMethod.join(', '), // Join array to string for multi-select
+        painCompensation: formData.painCompensation.join('; '),
         submittedAt: new Date().toISOString(),
         userCountry: userCountry 
       };
@@ -494,39 +504,19 @@ const App = () => {
     }
   };
 
-  // 選項定義
-  const ageOptions = ["25-30", "31-35", "36-40", "41-45", "46+"];
-  const occOptions = [
-    { val: "tech", label: { "zh-TW": "科技 / 研發", "zh-CN": "科技 / 研发", "en": "Tech / R&D" } },
-    { val: "finance", label: { "zh-TW": "金融 / 投資", "zh-CN": "金融 / 投资", "en": "Finance / Investment" } },
-    { val: "founder", label: { "zh-TW": "創業 / 管理", "zh-CN": "创业 / 管理", "en": "Founder / C-Level" } },
-    { val: "professional", label: { "zh-TW": "專業人士 (律師/醫師)", "zh-CN": "专业人士 (律师/医师)", "en": "Professional (Lawyer/Doctor)" } },
-    { val: "other", label: { "zh-TW": "其他", "zh-CN": "其他", "en": "Other" } },
+  const deskHourOptions = [
+    { val: '<4', labelKey: 'desk_opt_1' },
+    { val: '4-8', labelKey: 'desk_opt_2' },
+    { val: '8-12', labelKey: 'desk_opt_3' },
+    { val: '12+', labelKey: 'desk_opt_4' },
   ];
-  
-  const painOptions = {
-    "zh-TW": ['肩腰結構不滿意', '上半身張力/僵硬', '站姿缺乏氣場', '穿衣撐不起來', '長期久坐駝背'],
-    "zh-CN": ['肩腰结构不满意', '上半身张力/僵硬', '站姿缺乏气场', '穿衣撑不起来', '长期久坐驼背'],
-    "en": ['Structure Issues', 'Upper Body Tension', 'Lack of Presence', 'Clothes Fit Poorly', 'Slouching']
-  };
-
-  const goalOptions = {
-    "zh-TW": ['結構優化', '專業形象提升', '穿衣支撐'],
-    "zh-CN": ['结构优化', '专业形象提升', '穿衣支撑'],
-    "en": ['Optimize Structure', 'Pro Image', 'Clothes Fit']
-  };
-
-  const timeOptions = {
-    "zh-TW": ['< 5 分鐘', '5-10 分鐘', '10-20 分鐘', '20-30 分鐘', '30-45 分鐘'],
-    "zh-CN": ['< 5 分钟', '5-10 分钟', '10-20 分钟', '20-30 分钟', '30-45 分钟'],
-    "en": ['< 5 mins', '5-10 mins', '10-20 mins', '20-30 mins', '30-45 mins']
-  };
-
-  const priceOptions = {
-    "zh-TW": [translations['zh-TW'].opt_unwilling, 'NT$ 600 - 900', 'NT$ 900 - 1,200', 'NT$ 1,200 - 1,500'],
-    "zh-CN": [translations['zh-CN'].opt_unwilling, '¥ 150 - 200', '¥ 200 - 300', '¥ 300 - 400'],
-    "en": [translations['en'].opt_unwilling, '$20 - 25', '$25 - 35', '$35 - 50']
-  };
+  const painOptionKeys = ['pain_opt_1', 'pain_opt_2', 'pain_opt_3', 'pain_opt_4'];
+  const paidOptions = [
+    { val: 'pt_chiro', labelKey: 'paid_opt_1' },
+    { val: 'massage_programs', labelKey: 'paid_opt_2' },
+    { val: 'youtube_only', labelKey: 'paid_opt_3' },
+    { val: 'ignore', labelKey: 'paid_opt_4' },
+  ];
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-500 ${theme === 'dark' ? 'bg-[#0a0a0a] text-slate-300 selection:bg-blue-500/30 selection:text-white' : 'bg-[#f5f5f7] text-slate-700 selection:bg-slate-200 selection:text-black'}`}>
@@ -604,36 +594,33 @@ const App = () => {
               theme === 'dark' ? 'bg-transparent border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'
             }`}>
               <div className={`w-1.5 h-1.5 rounded-full ${theme === 'dark' ? 'bg-blue-500' : 'bg-black'}`}></div>
-              Beta Access Only
+              {t('hero_badge')}
             </div>
             
-            <h1 className={`text-5xl lg:text-7xl font-bold leading-tight tracking-tight ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-              {t('hero_title_1')}<br />
-              {t('hero_title_2')} <span className={`underline decoration-4 underline-offset-4 ${theme === 'dark' ? 'decoration-blue-700' : 'decoration-blue-200'}`}>{t('hero_title_highlight')}</span>
+            <h1 className={`text-4xl lg:text-6xl font-bold leading-tight tracking-tight ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+              {t('hero_headline')}
             </h1>
             
-            <p className={`text-lg max-w-md leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className={`text-base lg:text-lg max-w-xl leading-relaxed whitespace-pre-line ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
               {t('hero_subtitle')}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col gap-4 pt-4">
               <button 
                 onClick={scrollToForm}
-                className={`group px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-sm border transition-all ${
+                className={`group w-full sm:w-auto px-8 py-4 font-bold text-sm tracking-widest uppercase rounded-sm border transition-all ${
                   theme === 'dark' 
                   ? 'bg-white text-black border-white hover:bg-transparent hover:text-white' 
                   : 'bg-black text-white border-black hover:bg-transparent hover:text-black'
                 }`}
               >
-                <span className="flex items-center gap-3">
+                <span className="flex items-center justify-center gap-3">
                   {t('hero_cta')} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </span>
               </button>
-              
-              <div className={`flex items-center gap-4 px-4 py-2 text-xs font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
-                <Users size={14} />
-                <span>{t('hero_limit')}</span>
-              </div>
+              <p className={`text-[11px] font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
+                {t('hero_limit')}
+              </p>
             </div>
           </div>
 
@@ -680,16 +667,18 @@ const App = () => {
 
       
 
-      {/* Core Values */}
+      {/* The Problem */}
       <section className={`py-24 border-t transition-colors duration-500 ${theme === 'dark' ? 'bg-[#0a0a0a] border-slate-900' : 'bg-[#f5f5f7] border-slate-200'}`}>
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <h2 className={`text-3xl font-bold mb-12 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+            {t('problem_title')}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: <Scan size={20} />, title: t('feat_1_title'), desc: t('feat_1_desc') },
-              { icon: <TrendingUp size={20} />, title: t('feat_2_title'), desc: t('feat_2_desc') },
-              { icon: <Activity size={20} />, title: t('feat_3_title'), desc: t('feat_3_desc') },
-              { icon: <ShieldCheck size={20} />, title: t('feat_4_title'), desc: t('feat_4_desc') }
-            ].map((feature, idx) => (
+              { icon: <Activity size={20} />, title: t('problem_1_title'), desc: t('problem_1_desc') },
+              { icon: <AlertCircle size={20} />, title: t('problem_2_title'), desc: t('problem_2_desc') },
+              { icon: <TrendingUp size={20} />, title: t('problem_3_title'), desc: t('problem_3_desc') }
+            ].map((item, idx) => (
               <div key={idx} className={`p-6 rounded-sm border transition-all duration-300 group ${
                 theme === 'dark' 
                 ? 'border-slate-900 bg-transparent hover:border-blue-900' 
@@ -698,26 +687,26 @@ const App = () => {
                 <div className={`w-10 h-10 flex items-center justify-center mb-6 transition-colors ${
                   theme === 'dark' ? 'text-slate-400 group-hover:text-blue-400' : 'text-slate-600 group-hover:text-blue-600'
                 }`}>
-                  {feature.icon}
+                  {item.icon}
                 </div>
-                <h3 className={`text-base font-bold mb-3 tracking-wide ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{feature.title}</h3>
-                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{feature.desc}</p>
+                <h3 className={`text-base font-bold mb-3 tracking-wide ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{item.title}</h3>
+                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Process Flow */}
+      {/* How It Works */}
       <section className={`py-24 ${theme === 'dark' ? 'bg-[#050505]' : 'bg-white'}`}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{t('step_title')}</h2>
-            <p className="text-slate-500">{t('step_subtitle')}</p>
+            <h2 className={`text-3xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{t('how_title')}</h2>
+            <p className="text-slate-500">{t('how_subtitle')}</p>
           </div>
 
-          {/* Step Numbers */}
-          <div className="grid md:grid-cols-4 gap-8 relative mb-16">
+          {/* Step Numbers - 3 steps */}
+          <div className="grid md:grid-cols-3 gap-8 relative mb-16">
             <div className={`hidden md:block absolute top-8 left-0 w-full h-[1px] bg-gradient-to-r from-transparent to-transparent z-0 ${
               theme === 'dark' ? 'via-slate-800' : 'via-slate-200'
             }`}></div>
@@ -725,8 +714,7 @@ const App = () => {
             {[
               { step: "01", title: t('step_1') },
               { step: "02", title: t('step_2') },
-              { step: "03", title: t('step_3') },
-              { step: "04", title: t('step_4') }
+              { step: "03", title: t('step_3') }
             ].map((item, idx) => (
               <div key={idx} className="relative z-10 flex flex-col items-center text-center group">
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-mono mb-6 ring-8 transition-colors ${
@@ -736,14 +724,16 @@ const App = () => {
                 }`}>
                   {item.step}
                 </div>
-                <h3 className={`text-sm font-bold tracking-widest uppercase ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{item.title}</h3>
+                <h3 className={`text-sm font-bold tracking-widest uppercase ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+                  {item.title}
+                </h3>
               </div>
             ))}
           </div>
 
-          {/* Visual Demonstrations - Steps 1 & 2 */}
+          {/* Visual Demonstrations - Steps 1 & 2 (photos preserved) */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16 mb-16">
-            {/* Step 1: 體態快照 - Mobile Scanner */}
+            {/* Step 1: Capture - Mobile Scanner */}
             <div className="flex flex-col items-center space-y-4">
               <div className="relative w-[280px] h-[580px] bg-[#101822] rounded-[2.5rem] border-[6px] border-[#1e293b] shadow-2xl overflow-hidden select-none font-sans transform hover:scale-[1.02] transition-transform duration-500">
                 {/* Style for animation */}
@@ -820,7 +810,7 @@ const App = () => {
                     {/* Floating Tag: Tilt */}
                     <div className="absolute bottom-[30%] left-2 bg-black/60 backdrop-blur-md px-2 py-1.5 rounded-md border border-white/20 shadow-lg flex flex-col items-center justify-center min-w-[40px]">
                       <span className="text-[7px] text-cyan-400 tracking-widest uppercase mb-0.5 font-bold">Tilt</span>
-                      <span className="text-[10px] font-bold text-white font-mono">0.4°</span>
+                      <span className="text-[10px] font-bold text-white font-mono"></span>
                     </div>
                   </main>
 
@@ -858,7 +848,7 @@ const App = () => {
               </div>
             </div>
 
-            {/* Step 2: 趨勢觀察 - Structural Analysis */}
+            {/* Step 2: Analyze - Structural Analysis */}
             <div className="flex flex-col items-center space-y-4">
               <div className="bg-[#101822] rounded-xl p-6 border border-slate-800 overflow-hidden shadow-2xl w-full max-w-sm font-sans">
                 <div className="flex justify-between items-center mb-6">
@@ -896,7 +886,7 @@ const App = () => {
                 <div className="flex gap-3">
                   <div className="flex-1 bg-[#0a0f16] p-3 rounded-md border border-slate-800 transition-colors">
                     <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1">Observation</p>
-                    <p className="text-[10px] text-slate-300 leading-snug">Spine aligned. <span className="text-yellow-500">2.1° fwd shift</span> identified.</p>
+                    <p className="text-[10px] text-slate-300 leading-snug">Spine aligned. </p>
                   </div>
                   <div className="flex-1 bg-[#0a0f16] p-3 rounded-md border border-slate-800 transition-colors">
                     <p className="text-[8px] text-slate-500 uppercase tracking-wider mb-1">Impact</p>
@@ -918,7 +908,20 @@ const App = () => {
               </div>
             </div>
 
-
+            {/* Step 3: Calibrate - text card (no photo) */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className={`w-full max-w-sm p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#111] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-mono font-bold mb-4 ${
+                  theme === 'dark' ? 'bg-blue-900/20 text-blue-400 border border-blue-800' : 'bg-blue-50 text-blue-600 border border-blue-200'
+                }`}>
+                  03 · {t('step_3')}
+                </div>
+                <ul className={`text-sm leading-relaxed space-y-3 list-disc list-outside pl-5 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <li>{t('step_3_bullet_1')}</li>
+                  <li>{t('step_3_bullet_2')}</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1097,7 +1100,7 @@ const App = () => {
                 </div>
               )}
               
-              {/* Basic Info */}
+              {/* 1. Basic Info */}
               <div className="grid md:grid-cols-2 gap-8 mt-4">
                 <div className="space-y-3">
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_name')}</label>
@@ -1127,124 +1130,80 @@ const App = () => {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-8">
-                 <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_age')}</label>
-                  <div className="relative">
-                    <select 
-                      name="age"
-                      value={formData.age}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 transition-colors appearance-none ${
-                        theme === 'dark' ? 'border-slate-800 text-slate-300' : 'border-slate-300 text-slate-700'
-                      }`}
-                    >
-                      <option value="">--</option>
-                      {ageOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_occ')}</label>
-                  <div className="relative">
-                    <select 
-                      name="occupation"
-                      value={formData.occupation}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 transition-colors appearance-none ${
-                        theme === 'dark' ? 'border-slate-800 text-slate-300' : 'border-slate-300 text-slate-700'
-                      }`}
-                    >
-                      <option value="">--</option>
-                      {occOptions.map(opt => <option key={opt.val} value={opt.val}>{opt.label[lang]}</option>)}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-                  </div>
+              {/* 2. Desk hours */}
+              <div className={`space-y-4 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">{t('label_desk_hours')}</label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {deskHourOptions.map((opt) => (
+                    <label key={opt.val} className={`text-sm border rounded-sm py-3 px-4 cursor-pointer transition-all text-center ${
+                      formData.deskHours === opt.val
+                        ? (theme === 'dark' ? 'border-blue-600 text-blue-400 bg-blue-900/10' : 'border-black text-black bg-slate-100')
+                        : (theme === 'dark' ? 'border-slate-800 text-slate-500 hover:border-slate-600' : 'border-slate-300 text-slate-500 hover:border-slate-400')
+                    }`}>
+                      <input type="radio" name="deskHours" value={opt.val} onChange={handleInputChange} className="hidden" />
+                      {t(opt.labelKey)}
+                    </label>
+                  ))}
                 </div>
               </div>
 
-              {/* Habits */}
-              <div className={`space-y-6 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-4">{t('label_fitness')}</label>
-                <div className="grid md:grid-cols-2 gap-8">
-                   <div>
-                     <p className="text-xs text-slate-500 mb-3">{t('label_freq')}</p>
-                     <div className="flex gap-2">
-                        {['0', '1-2', '3-4', '5+'].map(opt => (
-                          <label key={opt} className={`flex-1 text-center cursor-pointer border rounded-sm py-2 text-sm font-mono transition-all ${
-                            formData.fitnessFreq === opt 
-                              ? (theme === 'dark' ? 'border-blue-600 text-blue-400 bg-blue-900/10' : 'border-black text-black bg-slate-100')
-                              : (theme === 'dark' ? 'border-slate-800 text-slate-500 hover:border-slate-600' : 'border-slate-300 text-slate-400 hover:border-slate-400')
-                          }`}>
-                            <input type="radio" name="fitnessFreq" value={opt} onChange={handleInputChange} className="hidden" />
-                            {opt}
-                          </label>
-                        ))}
-                     </div>
-                   </div>
-                   <div>
-                     <p className="text-xs text-slate-500 mb-3">{t('label_exp')}</p>
-                     <div className="relative">
-                       <select name="fitnessExp" onChange={handleInputChange} className={`w-full px-3 py-2 rounded-sm text-sm appearance-none border bg-transparent focus:outline-none focus:border-blue-500 ${
-                          theme === 'dark' ? 'border-slate-800 text-slate-300' : 'border-slate-300 text-slate-700'
-                       }`}>
-                          <option value="">--</option>
-                          <option value="<1">&lt; 1 Year</option>
-                          <option value="1-3">1 - 3 Years</option>
-                          <option value="3-5">3 - 5 Years</option>
-                          <option value="5+">5+ Years</option>
-                       </select>
-                       <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
-                     </div>
-                   </div>
-                </div>
+              {/* 3. Lifts stuck - text */}
+              <div className={`space-y-3 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_lifts_stuck')}</label>
+                <textarea
+                  name="liftsStuck"
+                  value={formData.liftsStuck}
+                  onChange={handleInputChange}
+                  rows="3"
+                  placeholder={t('label_lifts_placeholder')}
+                  className={`w-full px-4 py-3 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 transition-colors ${
+                    theme === 'dark' ? 'border-slate-800 text-white placeholder-slate-600' : 'border-slate-300 text-black placeholder-slate-400'
+                  }`}
+                />
               </div>
 
-              {/* Pain Points (Multi-Select + Other) */}
-              <div className={`space-y-6 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
+              {/* 4. Pain / compensation (multi-select + Other) */}
+              <div className={`space-y-4 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_pain')}</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {painOptions[lang].map((item) => (
-                     <label key={item} className={`flex items-center space-x-3 cursor-pointer p-3 border rounded-sm transition-all ${
-                       formData.painPoints.includes(item)
-                         ? (theme === 'dark' ? 'border-blue-600 bg-blue-900/10' : 'border-black bg-slate-50')
-                         : (theme === 'dark' ? 'border-slate-800 hover:border-slate-700' : 'border-slate-200 hover:border-slate-300')
-                     }`}>
-                        <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                          formData.painPoints.includes(item) 
-                            ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
-                            : (theme === 'dark' ? 'border-slate-600' : 'border-slate-300')
-                        }`}>
-                          {formData.painPoints.includes(item) && <Check size={10} className="text-white" />}
-                        </div>
-                        <input type="checkbox" value={item} onChange={(e) => handleCheckboxChange(e, 'painPoints')} className="hidden" />
-                        <span className={`text-sm ${formData.painPoints.includes(item) ? (theme === 'dark' ? 'text-white' : 'text-black') : 'text-slate-500'}`}>{item}</span>
-                     </label>
-                  ))}
-                  {/* Other Option */}
-                  <div className={`col-span-1 sm:col-span-2 space-y-2 ${formData.painPoints.includes('Other') ? 'opacity-100' : 'opacity-100'}`}>
-                     <label className={`flex items-center space-x-3 cursor-pointer p-3 border rounded-sm transition-all ${
-                        formData.painPoints.includes('Other')
-                          ? (theme === 'dark' ? 'border-blue-600 bg-blue-900/10' : 'border-black bg-slate-50')
-                          : (theme === 'dark' ? 'border-slate-800 hover:border-slate-700' : 'border-slate-200 hover:border-slate-300')
+                  {painOptionKeys.map((key) => (
+                    <label key={key} className={`flex items-center space-x-3 cursor-pointer p-3 border rounded-sm transition-all ${
+                      formData.painCompensation.includes(t(key))
+                        ? (theme === 'dark' ? 'border-blue-600 bg-blue-900/10' : 'border-black bg-slate-50')
+                        : (theme === 'dark' ? 'border-slate-800 hover:border-slate-700' : 'border-slate-200 hover:border-slate-300')
+                    }`}>
+                      <div className={`w-4 h-4 rounded-sm border flex items-center justify-center flex-shrink-0 ${
+                        formData.painCompensation.includes(t(key))
+                          ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
+                          : (theme === 'dark' ? 'border-slate-600' : 'border-slate-300')
                       }`}>
-                       <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                         formData.painPoints.includes('Other') 
-                           ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
-                           : (theme === 'dark' ? 'border-slate-600' : 'border-slate-300')
-                       }`}>
-                         {formData.painPoints.includes('Other') && <Check size={10} className="text-white" />}
-                       </div>
-                       <input type="checkbox" value="Other" onChange={(e) => handleCheckboxChange(e, 'painPoints')} className="hidden" />
-                       <span className={`text-sm ${formData.painPoints.includes('Other') ? (theme === 'dark' ? 'text-white' : 'text-black') : 'text-slate-500'}`}>{occOptions[4].label[lang]}</span>
+                        {formData.painCompensation.includes(t(key)) && <Check size={10} className="text-white" />}
+                      </div>
+                      <input type="checkbox" value={t(key)} onChange={(e) => handleCheckboxChange(e, 'painCompensation')} className="hidden" />
+                      <span className={`text-sm ${formData.painCompensation.includes(t(key)) ? (theme === 'dark' ? 'text-white' : 'text-black') : 'text-slate-500'}`}>{t(key)}</span>
                     </label>
-                     {/* Text Input for Other */}
-                     {formData.painPoints.includes('Other') && (
-                      <input 
-                        type="text" 
-                        name="painPointsOther"
-                        value={formData.painPointsOther}
+                  ))}
+                  <div className="sm:col-span-2 space-y-2">
+                    <label className={`flex items-center space-x-3 cursor-pointer p-3 border rounded-sm transition-all ${
+                      formData.painCompensation.includes(t('pain_opt_other'))
+                        ? (theme === 'dark' ? 'border-blue-600 bg-blue-900/10' : 'border-black bg-slate-50')
+                        : (theme === 'dark' ? 'border-slate-800 hover:border-slate-700' : 'border-slate-200 hover:border-slate-300')
+                    }`}>
+                      <div className={`w-4 h-4 rounded-sm border flex items-center justify-center flex-shrink-0 ${
+                        formData.painCompensation.includes(t('pain_opt_other'))
+                          ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
+                          : (theme === 'dark' ? 'border-slate-600' : 'border-slate-300')
+                      }`}>
+                        {formData.painCompensation.includes(t('pain_opt_other')) && <Check size={10} className="text-white" />}
+                      </div>
+                      <input type="checkbox" value={t('pain_opt_other')} onChange={(e) => handleCheckboxChange(e, 'painCompensation')} className="hidden" />
+                      <span className={`text-sm ${formData.painCompensation.includes(t('pain_opt_other')) ? (theme === 'dark' ? 'text-white' : 'text-black') : 'text-slate-500'}`}>{t('pain_opt_other')}</span>
+                    </label>
+                    {formData.painCompensation.includes(t('pain_opt_other')) && (
+                      <input
+                        type="text"
+                        name="painOther"
+                        value={formData.painOther}
                         onChange={handleInputChange}
                         placeholder={t('other_placeholder')}
                         className={`w-full text-sm px-3 py-2 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 ${
@@ -1256,135 +1215,25 @@ const App = () => {
                 </div>
               </div>
 
-               {/* Goals & Time */}
-               <div className={`space-y-6 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
-                <div className="grid md:grid-cols-2 gap-8">
-                   <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">{t('label_goals')}</label>
-                      <div className="space-y-2">
-                        {goalOptions[lang].map((item) => (
-                           <label key={item} className="flex items-center space-x-3 cursor-pointer group">
-                              <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                                formData.goals.includes(item) 
-                                  ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
-                                  : (theme === 'dark' ? 'border-slate-600 group-hover:border-slate-400' : 'border-slate-300 group-hover:border-slate-400')
-                              }`}>
-                                {formData.goals.includes(item) && <Check size={10} className="text-white" />}
-                              </div>
-                              <input type="checkbox" value={item} onChange={(e) => handleCheckboxChange(e, 'goals')} className="hidden" />
-                              <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{item}</span>
-                           </label>
-                        ))}
-                         {/* Other Option */}
-                         <label className="flex items-center space-x-3 cursor-pointer group">
-                              <div className={`w-4 h-4 rounded-sm border flex items-center justify-center transition-colors ${
-                                formData.goals.includes('Other') 
-                                  ? (theme === 'dark' ? 'bg-blue-600 border-blue-600' : 'bg-black border-black')
-                                  : (theme === 'dark' ? 'border-slate-600 group-hover:border-slate-400' : 'border-slate-300 group-hover:border-slate-400')
-                              }`}>
-                                {formData.goals.includes('Other') && <Check size={10} className="text-white" />}
-                              </div>
-                              <input type="checkbox" value="Other" onChange={(e) => handleCheckboxChange(e, 'goals')} className="hidden" />
-                              <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{occOptions[4].label[lang]}</span>
-                         </label>
-                        {formData.goals.includes('Other') && (
-                          <input 
-                            type="text" 
-                            name="goalsOther"
-                            value={formData.goalsOther}
-                            onChange={handleInputChange}
-                            placeholder={t('other_placeholder')}
-                            className={`w-full mt-2 text-sm px-3 py-2 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 ${
-                              theme === 'dark' ? 'border-slate-800 text-slate-300' : 'border-slate-300 text-slate-700'
-                            }`}
-                          />
-                        )}
+              {/* 5. Paid to fix */}
+              <div className={`space-y-4 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_paid_fix')}</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {paidOptions.map((opt) => (
+                    <label key={opt.val} className={`flex items-center space-x-3 cursor-pointer p-4 border rounded-sm transition-all ${
+                      formData.paidToFix === opt.val
+                        ? (theme === 'dark' ? 'border-blue-600 bg-blue-900/10' : 'border-black bg-slate-50')
+                        : (theme === 'dark' ? 'border-slate-800 hover:border-slate-700' : 'border-slate-200 hover:border-slate-300')
+                    }`}>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                        formData.paidToFix === opt.val ? (theme === 'dark' ? 'border-blue-600' : 'border-black') : (theme === 'dark' ? 'border-slate-600' : 'border-slate-300')
+                      }`}>
+                        {formData.paidToFix === opt.val && <div className={`w-2 h-2 rounded-full ${theme === 'dark' ? 'bg-blue-600' : 'bg-black'}`} />}
                       </div>
-                   </div>
-                   <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">{t('label_time')}</label>
-                      <div className="space-y-2">
-                        {timeOptions[lang].map((opt) => (
-                           <label key={opt} className="flex items-center space-x-3 cursor-pointer group">
-                              <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                                formData.timeCommitment === opt 
-                                  ? (theme === 'dark' ? 'border-blue-600' : 'border-black')
-                                  : (theme === 'dark' ? 'border-slate-600 group-hover:border-slate-400' : 'border-slate-300 group-hover:border-slate-400')
-                              }`}>
-                                {formData.timeCommitment === opt && <div className={`w-2 h-2 rounded-full ${theme === 'dark' ? 'bg-blue-600' : 'bg-black'}`}></div>}
-                              </div>
-                              <input 
-                                type="radio" 
-                                name="timeCommitment" 
-                                value={opt} 
-                                onChange={handleInputChange}
-                                className="hidden"
-                              />
-                              <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{opt}</span>
-                           </label>
-                        ))}
-                      </div>
-                   </div>
-                </div>
-              </div>
-
-              {/* Price & Tracking */}
-              <div className={`space-y-6 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
-                 <div className="grid md:grid-cols-2 gap-8">
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">{t('label_price')}</label>
-                      <div className="grid grid-cols-2 gap-3">
-                         {priceOptions[lang].map((price) => (
-                           <label key={price} className={`text-sm border rounded-sm p-4 cursor-pointer transition-all flex items-center justify-center text-center font-mono ${
-                             formData.paymentWillingness === price 
-                               ? (theme === 'dark' ? 'border-blue-500 text-blue-400' : 'border-black text-black ring-1 ring-black')
-                               : (theme === 'dark' ? 'border-slate-800 text-slate-500 hover:border-slate-600' : 'border-slate-200 text-slate-500 hover:border-slate-300')
-                           }`}>
-                              <input type="radio" name="paymentWillingness" value={price} onChange={handleInputChange} className="hidden" />
-                              {price}
-                           </label>
-                         ))}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-3">{t('label_track')}</label>
-                      <div className="flex gap-4 h-full">
-                        <label className={`flex flex-col items-center justify-center flex-1 border rounded-sm p-3 cursor-pointer transition-all ${
-                           formData.trackingMethod.includes('selfie')
-                             ? (theme === 'dark' ? 'border-blue-500 text-blue-400' : 'border-black text-black ring-1 ring-black')
-                             : (theme === 'dark' ? 'border-slate-800 text-slate-500 hover:border-slate-600' : 'border-slate-200 text-slate-500 hover:border-slate-300')
-                        }`}>
-                           <Smartphone size={20} className="mb-3 opacity-80" />
-                           <span className="text-xs font-mono uppercase">Selfie</span>
-                           <input type="checkbox" value="selfie" onChange={(e) => handleCheckboxChange(e, 'trackingMethod')} className="hidden" />
-                        </label>
-                        <label className={`flex flex-col items-center justify-center flex-1 border rounded-sm p-3 cursor-pointer transition-all ${
-                           formData.trackingMethod.includes('wearable')
-                             ? (theme === 'dark' ? 'border-blue-500 text-blue-400' : 'border-black text-black ring-1 ring-black')
-                             : (theme === 'dark' ? 'border-slate-800 text-slate-500 hover:border-slate-600' : 'border-slate-200 text-slate-500 hover:border-slate-300')
-                        }`}>
-                           <Activity size={20} className="mb-3 opacity-80" />
-                           <span className="text-xs font-mono uppercase">Wearable</span>
-                           <input type="checkbox" value="wearable" onChange={(e) => handleCheckboxChange(e, 'trackingMethod')} className="hidden" />
-                        </label>
-                      </div>
-                    </div>
-                 </div>
-              </div>
-
-               {/* Extra Suggestions */}
-              <div className={`space-y-6 pt-6 border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-100'}`}>
-                <div className="space-y-3">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('label_extra')}</label>
-                  <textarea
-                    name="extra"
-                    rows="3"
-                    value={formData.extra}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-sm border bg-transparent focus:outline-none focus:border-blue-500 transition-colors ${
-                      theme === 'dark' ? 'border-slate-800 text-white' : 'border-slate-300 text-black'
-                    }`}
-                  />
+                      <input type="radio" name="paidToFix" value={opt.val} onChange={handleInputChange} className="hidden" />
+                      <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{t(opt.labelKey)}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
@@ -1412,7 +1261,7 @@ const App = () => {
                 </button>
                 <p className="text-center text-[10px] uppercase tracking-wider text-slate-500 mt-6 flex items-center justify-center gap-2">
                   <Lock size={10} />
-                  End-to-end encrypted
+                  {t('footer_encrypted')}
                 </p>
               </div>
 
@@ -1431,7 +1280,7 @@ const App = () => {
               <div className={`py-3 px-6 rounded-sm border inline-block text-left ${
                 theme === 'dark' ? 'bg-black border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}>
-                <p className="text-[10px] text-slate-500 mb-1 uppercase tracking-widest">We will get back to you soon!</p>
+                <p className="text-[10px] text-slate-500 mb-1 uppercase tracking-widest">{t('success_follow')}</p>
               </div>
             </div>
           )}
