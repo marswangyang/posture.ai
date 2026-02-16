@@ -384,6 +384,7 @@ const App = () => {
 
           await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
           // 流量追蹤默默在背景執行，不需要顯示成功/失敗給用戶
@@ -471,11 +472,18 @@ const App = () => {
 
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
-
+      const text = await response.text();
+      if (!response.ok) throw new Error(text || 'Request failed');
+      let result;
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch (_) {
+        throw new Error(text || 'Invalid response');
+      }
       if (result.status === 'success') {
         setStatus('success');
       } else if (result.status === 'error' && result.code === 'DUPLICATE_EMAIL') {
@@ -488,9 +496,7 @@ const App = () => {
     } catch (error) {
       console.error('Submission Error:', error);
       setStatus('error');
-      if (!serverError) {
-        setServerError(t('error_general'));
-      }
+      setServerError(error.message || t('error_general'));
     }
   };
 
